@@ -1,0 +1,44 @@
+server:
+  host: localhost
+  port: ${PORT:8080}
+  error:
+    whitelabel:
+      enabled: false
+
+spring.application:
+  name: dataloader-graphql
+
+spring.jpa:
+  open-in-view: true
+  database: postgresql
+  properties:
+    hibernate:
+      jdbc.lob.non_contextual_creation: true
+      jdbc.time_zone: UTC
+      temp.use_jdbc_metadata_defaults: false
+      show_sql: true
+      format_sql: true
+  hibernate:
+    ddl-auto: validate
+
+spring.datasource:
+  url: jdbc:postgresql://localhost:5432/dataloader_test
+  username: postgres
+  password:
+  driver-class-name: org.postgresql.Driver
+
+
+graphql:
+  servlet:
+    exception-handlers-enabled: true
+    tracing-enabled: true
+    actuator-metrics: true
+    enabled: true
+    mapping: /graphql
+    corsEnabled: true
+    cors:
+      allowed-origin: '*'
+  tools:
+    schema-location-pattern: '**/*.graphqls'
+
+debug: true
