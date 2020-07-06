@@ -42,7 +42,39 @@ N 代表的就是我们查询 review 的 10 次 additional query
 
 **N + 1 => 2**
 
+## 相关背景知识
 
+Graphql resolver and data loader registry
+
+### Graphql resolver
+
+Graphql Resolver 是由 graphql-java-kickstart-tools中提供的一个类，作为所有 graphql resolver 的父类。子类有 **GraphQLQueryResolver, GraphQLMutationResolver and GraphQLSubscriptionResolver** 提供最基础的 graphql 的 query, mutation and subscription 功能。
+
+Graphql  resolver 的用处，就是自动帮我们把 **java object model** 和我们的 **graphql schema** 定义中的类型对应起来。不用像原生的 graphql-java一样， 通过 **runtime wiring** 和 **typeDefinitionRegistry** 把 model 和 graphql type 对应起来。
+
+
+
+原生如图所示: 
+
+![Creating GraphQL](https://www.graphql-java.com/images/graphql_creation.png)
+
+
+
+用了 Graphql resolver 如图所示:
+
+![img](https://www.altexsoft.com/media/2019/03/word-image-4.png)
+
+
+
+### DataLoaderRegistry
+
+Dataloader Registry 是存放所有 dataloader 的一个中心. 提供 通过 name 去获取 dataloader 的方法。
+
+```java
+* This allows data loaders to be registered together into a single place so
+* they can be dispatched as one.  It also allows you to retrieve data loaders by
+* name from a central place
+```
 
 ## data loader 怎么去用？
 
@@ -88,7 +120,9 @@ public CompletableFuture<List<ReviewEntity>> getReviews(
 
 1. 性能更加快
 2. 不会阻塞到正常的进程
-3. 我们只负责方法的定义，框架进行消费，在resolver 返回之前，获取到异步查询的结果，并赋到返回的信息中来
+3. 我们只负责方法的定义，框架进行消费(只有框架才知道什么时候所有未完成的数据提供完了，才能决定什么时候是最佳的调用时间)，在resolver 返回之前，获取到异步查询的结果，并赋到返回的信息中来
+
+> The only execution that works with DataLoader is `graphql.execution.AsyncExecutionStrategy`. This is because this execution strategy knows then the most optimal time to dispatch() your load calls is. It does this by deeply tracking how many fields are outstanding and whether they are list values and so on.
 
 ## Dependency
 
